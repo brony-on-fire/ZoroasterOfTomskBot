@@ -15,8 +15,7 @@ words_hash = 'words'
 
 def get_word_list() -> List[str]:
     '''
-    Функция для возврата списка всех доступных слов,
-    на которые реагирует бот.
+    Возвращает список всех доступных слов, на которые реагирует бот.
     '''
     list_hash = r.hkeys(words_hash)
 
@@ -24,7 +23,7 @@ def get_word_list() -> List[str]:
 
 def view_word_info(list_hash: List[str], word_for_edit: int):
     '''
-    Функция для просмотра информации о выбранном слове.
+    Отображает информации о выбранном слове.
     '''
     if word_for_edit >= 0 and word_for_edit < len(list_hash):
         id_answer_of_word = r.hget(words_hash, list_hash[word_for_edit])
@@ -36,8 +35,7 @@ def view_word_info(list_hash: List[str], word_for_edit: int):
 
 def add_new_word(word: str, answer: str, probability: int, position: str) -> str:
     '''
-    Функция для добавление нового слова,
-    на которое будет реагировать бот.
+    Добавляет новое слово, на которое будет реагировать бот.
     '''
     id_answer_of_word = f'word:{getrandbits(32)}:hash'
     params = {

@@ -7,11 +7,9 @@ from typing import List
 arguments = sys.argv[:]
 token = arguments[1]
 
-bot = telebot.TeleBot(token)
-
 def get_word_dict() -> List[str]:
     '''
-    Функция для загрузки словарей из redis
+    Загружает словари из redis
     '''
     word_list = db_operations.get_word_list()
     word_dict = {}
@@ -21,8 +19,13 @@ def get_word_dict() -> List[str]:
 
     return word_dict
 
+bot = telebot.TeleBot(token)
+
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
+    '''
+    Читает сообщения в чате и отвечает на них.
+    '''
     dice = lambda: randint(0, 100) #получаем рандомное число для просчета вероятности
     last_time_mark = int #создаем переменную для хранения последней временной метки сохранения базы с фразами
 
@@ -41,7 +44,7 @@ def get_text_messages(message):
         #Получаем позицию из redis, сохраняем её для формирования среза, задаем максимальную длину сообщения
         position_dict = {
                         'no matter': [0, None, len(get_text)],
-                        'begin': [None, len(word), len(word) + 10],
+                        'begin': [None, len(word), len(word) + 3],
                         'end' : [-len(word), None, len(get_text)]
                         }
         position = position_dict[word_dict[word]['position']]
