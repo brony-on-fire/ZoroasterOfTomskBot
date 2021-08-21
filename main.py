@@ -9,7 +9,7 @@ token = arguments[1]
 
 def get_word_dict() -> List[str]:
     '''
-    Загружает словари из redis
+    Загружает словари из БД
     '''
     word_list = db_operations.get_word_list()
     word_dict = {}
@@ -39,7 +39,8 @@ def get_text_messages(message):
         answer = word_dict[word]['answer']
         probability = int(word_dict[word]['probability'])
 
-        get_text = message.text.lower() #Получаем текст сообщения и делаем все буквы строчными
+        get_text = message.text.lower() #получаем текст сообщения и делаем все буквы строчными
+        get_text = get_text.replace('ё', 'е')
 
         #Получаем позицию из redis, сохраняем её для формирования среза, задаем максимальную длину сообщения
         position_dict = {

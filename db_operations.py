@@ -1,5 +1,5 @@
 '''
-Модуль предназначен для редактирования фраз,
+Модуль предназначен для редактирования фраз
 для бота, хранящихся в базе данных redis
 '''
 #/usr/bin/env python3
@@ -104,6 +104,3 @@ if __name__ == '__main__':
                     position = 'end'
             
             add_new_word(word, answer, probability, position)
-
-
-    
