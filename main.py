@@ -58,7 +58,6 @@ def get_text_messages(message):
                 bot.send_message(message.chat.id, answer, reply_to_message_id = message.message_id)
                 timeout_dict[message.chat.id] = {'last_message':int(time())}
                 timeout_dict[message.chat.id]['timeout'] = randint(600, 3600)
-                print(timeout_dict)
                 break
 
 bot.polling(none_stop=True, interval=0)
