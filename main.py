@@ -29,7 +29,7 @@ def get_text_messages(message):
     Читает сообщения в чате и отвечает на них.
     '''
     #Запускаем алгоритм, только если прошло 2 минуты с последнего сообщения, на который поступил ответ
-    if timeout_dict.get(message.chat.id) == None or (int(time()) - timeout_dict[message.chat.id] > 120):
+    if timeout_dict.get(message.chat.id) == None or (int(time()) - timeout_dict[message.chat.id]['last_message'] > timeout_dict[message.chat.id]['timeout']):
         dice = lambda: randint(0, 100) #получаем рандомное число для просчета вероятности
         last_time_mark = int #создаем переменную для хранения последней временной метки сохранения базы с фразами
 
@@ -56,7 +56,9 @@ def get_text_messages(message):
 
             if word in get_text[position[0]:position[1]] and dice() < probability and len(get_text) <= position[2]:
                 bot.send_message(message.chat.id, answer, reply_to_message_id = message.message_id)
-                timeout_dict[message.chat.id] = int(time())
+                timeout_dict[message.chat.id] = {'last_message':int(time())}
+                timeout_dict[message.chat.id]['timeout'] = randint(600, 3600)
+                print(timeout_dict)
                 break
 
 bot.polling(none_stop=True, interval=0)
