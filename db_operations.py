@@ -6,7 +6,7 @@
 
 import redis
 from random import getrandbits
-from typing import List
+from typing import Dict, List
 
 r = redis.Redis(decode_responses = True)
 
@@ -47,12 +47,23 @@ def add_new_word(word: str, answer: str, probability: int, position: str) -> str
 
     return 'OK'
 
+def parametr_of_word_edit(word_for_edit: int, params: Dict, list_hash: List[str]):
+    '''
+    Редактирует параметры выбранного слова.
+    '''
+    id_answer_of_word = r.hget(words_hash, list_hash[word_for_edit])
+    r.hmset(id_answer_of_word, params)
+        
 def show_last_save() -> int:
+    '''
+    Возвращает дату и время последнего изменения в БД.
+    '''
     timme_mark = r.lastsave()
 
     return timme_mark
 
 
+#Меню для просмотра и редактирования слов
 if __name__ == '__main__':
     print('Добро пожаловать, Господин!\nДля выхода из программы напиши "exit"')
 
@@ -61,8 +72,11 @@ if __name__ == '__main__':
         print('Для выбора действия нажми:',
             '1. Просмотреть список слов, на которые реагирует бот - "1"',
             '2. Добавить новое слово - "2".',
-            sep = "\n")
+            sep = "\n"
+            )
         next_step = input()
+        
+        #Раздел просмотра слов
         if next_step == "1":
             list_hash = get_word_list()
 
@@ -87,7 +101,29 @@ if __name__ == '__main__':
                         f'Ответ: "{answer}"\nВероятность: {probability}\n' + 
                         f'Позиция: {position}\nСостояние: {selector}\n'
                         )
+                
+                #Подраздел для редактирования слова
+                while True:
+                    print(
+                    'Ответ - 1',
+                    'Вероятность - 2', 
+                    'Позиция - 3', 
+                    'Состояние - 4',
+                    sep = '\n'
+                    )
+                    position_for_edit = input('Наберите номер параметра, который необходимо отредактировать, либо ENTER для выхода.')
+                    if position_for_edit == '': break
+                    position_for_edit = int(position_for_edit)
 
+                    if position_for_edit not in range(1, 5):
+                        print('Нет такого параметра!')
+                    else:
+                        new_parametr = input('Введите новое значение параметра: ')
+                        param_list = ['answer', 'probability', 'position', 'selector']
+                        new_parametr = {param_list[position_for_edit-1]:new_parametr}
+                        parametr_of_word_edit(word_for_edit, new_parametr, list_hash)
+
+        #Раздел добавления слова
         elif next_step == "2":
             word = input("Введите слово: ")
             answer = input("Введите ответ на слово: ")
