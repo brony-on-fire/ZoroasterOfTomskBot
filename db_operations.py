@@ -4,12 +4,14 @@
 '''
 #/usr/bin/env python3
 
-import redis
+import redis, time
 from random import getrandbits
 from typing import Dict, List
+from base64 import b64encode, b64decode
 
 r = redis.Redis(decode_responses = True)
 
+#СЛОВАРЬ ДЛЯ ШИТПОСТИНГА
 #Наименование словарей
 words_hash = 'words' 
 
@@ -62,6 +64,59 @@ def show_last_save() -> int:
 
     return timme_mark
 
+#СЛОВАРЬ ДЛЯ ДНЕЙ РОЖДЕНИЙ
+
+def get_birthday(chat_id: int):
+    '''
+    Извлекает дни рождения из словаря
+    '''
+    birthdays_id = f"birthday:{chat_id}"
+    birthdays_hash = r.hgetall(birthdays_id)
+    
+    return birthdays_hash
+
+def decode_birthdays(birthdays_hash):
+    '''
+    Декодирует значения словаря из base64 в список
+    '''
+    for key in birthdays_hash:
+        birthdays_hash[key] = b64decode(birthdays_hash[key])
+        birthdays_hash[key] = birthdays_hash[key].decode("utf-8")
+        birthdays_hash[key] = birthdays_hash[key].split(':')
+
+    return birthdays_hash
+
+def encode_birthday(user_id: str, user_name: str, birthday: str):
+    '''
+    Кодируем значение словаря из списка в base64
+    '''
+    birthday = f"{user_id}:{user_name}:{birthday}".encode('utf-8')
+    birthday = b64encode(birthday)
+
+    return birthday
+
+def put_birthday(user_id: str, user_name: str, chat_id: int, birthday:str):
+    '''
+    Добавляет день рождения в словарь
+    '''
+    #Проверяем, что дата в правильном формате
+    try:
+        time.strptime(birthday, "%d%m")
+    except ValueError:
+        return "Неправильный формат дня рождения."
+
+    #Достём словарь с днями рождения и изменяем дату
+    chat_birthdays = get_birthday(chat_id)
+
+    #Преобразовываем данные о пользователе и его дате рождения
+    birthday = encode_birthday(user_id, user_name, birthday)
+
+    #Записываем обработанные данные в redis
+    chat_birthdays[user_id] = birthday
+
+    #Сохраняем словарь с датами рождения
+    r.hmset(f"birthday:{chat_id}", chat_birthdays)
+    return "День рождения записан!"
 
 #Меню для просмотра и редактирования слов
 if __name__ == '__main__':

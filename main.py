@@ -4,6 +4,7 @@ import sys, telebot, db_operations
 from random import randint
 from typing import List
 from time import time
+from dtr_operation import full_birthday
 
 arguments = sys.argv[:]
 token = arguments[1]
@@ -23,6 +24,41 @@ def get_word_dict() -> List[str]:
 bot = telebot.TeleBot(token)
 timeout_dict = {}
 
+#ДНИ РОЖДЕНИЯ
+#Реагируем на команду с днями рождения
+@bot.message_handler(commands=['mybirthday'])
+def mybirthday_message(message):
+    '''
+    Выводит или изменяет день рождения пользователя
+    '''
+    chat_id = message.chat.id
+    user_id = str(message.from_user.id)
+    user_name = message.from_user.username
+    user_message = message.text[12:]
+    chat_birthdays = db_operations.decode_birthdays(db_operations.get_birthday(chat_id))
+    if user_message != '':
+        action_for_birthday = db_operations.put_birthday(user_id, user_name, chat_id, user_message)
+        bot.send_message(chat_id, action_for_birthday, reply_to_message_id = message.message_id)
+    elif chat_birthdays.get(user_id) != None and user_message == '':
+        bot.send_message(chat_id, f'У тебя зарегистрирован день рождения {full_birthday(chat_birthdays[user_id][2])}.', reply_to_message_id = message.message_id)
+    else:
+        bot.send_message(chat_id, 'У тебя не зарегистрирован день рождения.', reply_to_message_id = message.message_id)
+
+#Выводим список дней рождения
+@bot.message_handler(commands=['allbirthday'])
+def allbirthday_message(message):
+    chat_id = message.chat.id
+    chat_birthdays = db_operations.decode_birthdays(db_operations.get_birthday(chat_id))
+    if len(chat_birthdays) != 0:
+        birthday_list = ['Дни рождения всех уважаемых членов группы:']
+        for key in chat_birthdays:
+            birthday_list.append(f"{chat_birthdays[key][1]} - {full_birthday(chat_birthdays[key][2])}")
+        birthday_message = '\n'.join(birthday_list)
+        bot.send_message(chat_id, birthday_message)
+    else:
+        bot.send_message(chat_id, 'В чате не зарегистрированы дни рождения.', reply_to_message_id = message.message_id)
+
+#ШИТПОСТИНГ
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     '''
