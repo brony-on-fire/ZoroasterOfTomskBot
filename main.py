@@ -35,14 +35,20 @@ def mybirthday_message(message):
     user_id = str(message.from_user.id)
     user_name = message.from_user.username
     user_message = message.text[12:]
+
+    #Отрезаем имя бота, если команда выбрана из списка
+    if user_message == 'ZoroasterOfTomskBot': user_message = ''
+
     chat_birthdays = db_operations.decode_birthdays(db_operations.get_birthday(chat_id))
     if user_message != '':
         action_for_birthday = db_operations.put_birthday(user_id, user_name, chat_id, user_message)
         bot.send_message(chat_id, action_for_birthday, reply_to_message_id = message.message_id)
     elif chat_birthdays.get(user_id) != None and user_message == '':
-        bot.send_message(chat_id, f'У тебя зарегистрирован день рождения {full_birthday(chat_birthdays[user_id][2])}.', reply_to_message_id = message.message_id)
+        birthday_for_message = full_birthday(chat_birthdays[user_id][2])
+        bot.send_message(chat_id, f'У тебя зарегистрирован день рождения {birthday_for_message}.', reply_to_message_id = message.message_id)
     else:
-        bot.send_message(chat_id, 'У тебя не зарегистрирован день рождения.', reply_to_message_id = message.message_id)
+        bot.send_message(chat_id, 'У тебя не зарегистрирован день рождения. Набери "/mybirthday <ДДММ>". '
+        'Например, для 11 сентября будет /mybirthday 1109.', reply_to_message_id = message.message_id)
 
 #Выводим список дней рождения
 @bot.message_handler(commands=['allbirthday'])
