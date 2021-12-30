@@ -4,7 +4,7 @@ import sys, telebot, db_operations
 from random import randint
 from typing import List
 from time import time
-from dtr_operation import full_birthday
+from dtr_operation import full_birthday, sorted_birthday
 
 arguments = sys.argv[:]
 token = arguments[1]
@@ -34,6 +34,7 @@ def mybirthday_message(message):
     chat_id = message.chat.id
     user_id = str(message.from_user.id)
     user_name = message.from_user.username
+    if user_name is None: user_name = (message.from_user.first_name + ' ' + message.from_user.last_name)
     user_message = message.text[12:]
 
     #Отрезаем имя бота, если команда выбрана из списка
@@ -57,8 +58,9 @@ def allbirthday_message(message):
     chat_birthdays = db_operations.decode_birthdays(db_operations.get_birthday(chat_id))
     if len(chat_birthdays) != 0:
         birthday_list = ['Дни рождения всех уважаемых членов группы:']
-        for key in chat_birthdays:
-            birthday_list.append(f"{chat_birthdays[key][1]} - {full_birthday(chat_birthdays[key][2])}")
+
+        #Сортируем дни рождения и добавляем к сообщению
+        birthday_list = sorted_birthday(chat_birthdays)
         birthday_message = '\n'.join(birthday_list)
         bot.send_message(chat_id, birthday_message)
     else:

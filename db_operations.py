@@ -100,6 +100,9 @@ def put_birthday(user_id: str, user_name: str, chat_id: int, birthday:str):
     Добавляет день рождения в словарь
     '''
     #Проверяем, что дата в правильном формате
+    if len(birthday) != 4:
+        return "Неправильный формат дня рождения."
+
     try:
         time.strptime(birthday, "%d%m")
     except ValueError:
