@@ -57,10 +57,8 @@ def allbirthday_message(message):
     chat_id = message.chat.id
     chat_birthdays = db_operations.decode_birthdays(db_operations.get_birthday(chat_id))
     if len(chat_birthdays) != 0:
-        birthday_list = ['Дни рождения всех уважаемых членов группы:']
-
         #Сортируем дни рождения и добавляем к сообщению
-        birthday_list = sorted_birthday(chat_birthdays)
+        birthday_list = ['Дни рождения всех уважаемых членов группы:'] + sorted_birthday(chat_birthdays)
         birthday_message = '\n'.join(birthday_list)
         bot.send_message(chat_id, birthday_message)
     else:
