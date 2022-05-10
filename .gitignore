@@ -1,4 +1,5 @@
 __pycache__
 venv
-
-/*.sh
+.env
+data/bases/dump.rdb
+data/log/redis-server.log
