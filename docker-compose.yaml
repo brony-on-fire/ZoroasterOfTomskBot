@@ -1,0 +1,26 @@
+# Use root/example as user/password credentials
+version: '3.8'
+
+networks:
+  redis:
+
+services:
+
+  python:
+    build: ./python
+    restart: always
+    environment:
+      - BOT_TOKEN
+      - REDIS_HOST
+    networks:
+      - redis
+    volumes:
+      - ./app:/usr/src/app
+
+  redis:
+    build: ./redis
+    restart: always
+    networks:
+      - redis
+    volumes:
+      - ./data:/data
