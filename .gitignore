@@ -1,5 +1,4 @@
 __pycache__
-venv
+pgdata
 .env
-data/bases/dump.rdb
-data/log/redis-server.log
+

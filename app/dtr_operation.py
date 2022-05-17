@@ -1,35 +1,34 @@
 '''
 Модуль предназначен для преобразования даты рождения
 '''
-#/usr/bin/env python3
 
-from time import strptime, strftime
 from datetime import datetime
 import locale
 
 locale.setlocale(locale.LC_TIME, "ru_RU.UTF8")
 
-def full_birthday(birthday: str):
-    birthday = strptime(birthday, "%d%m")
+def full_birthday(birthday):
+    '''
+    Преобразует день рождения в человекочитаемый вид
+    '''
     birthday_template = "%d %B"
-    birthday = strftime(birthday_template, birthday)
+    birthday = birthday.strftime(birthday_template)
 
     return birthday
 
-def sorted_birthday(birthday_hash):
+def birthday_validator(birthday):
     '''
-    Сортирует дни рождения по дате
+    Проверяет, что пользователь отправил дату рождения в правильном формате
     '''
-    birthday_list = []
+    result = {'status': None, 'date': None}
 
-    #Создаем список для сортировки
-    for key in birthday_hash:
-        birthday_list.append([birthday_hash[key][2], birthday_hash[key][1]])
+    if len(birthday) != 4:
+        result['status'] = False
+    try:
+        date = datetime.strptime(birthday, "%d%m")
+        result['status'] = True
+        result['date'] = date
+    except ValueError:
+        result['status'] = False
 
-    #Сортируем список
-    birthday_list = sorted(birthday_list, key=lambda d: datetime.strptime(d[0], '%d%m'))
-
-    #Преобразуем даты в читаемый формат
-    birthday_list = [f'{user_name} - {full_birthday(birthday)}' for birthday, user_name in birthday_list]
-
-    return birthday_list
+    return result

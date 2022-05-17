@@ -2,7 +2,7 @@
 version: '3.8'
 
 networks:
-  redis:
+  bot_network:
 
 services:
 
@@ -11,16 +11,32 @@ services:
     restart: always
     environment:
       - BOT_TOKEN
-      - REDIS_HOST
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
     networks:
-      - redis
+      - bot_network
     volumes:
       - ./app:/usr/src/app
 
-  redis:
-    build: ./redis
+  postgres:
+    build: ./postgres
+    container_name: postgres_db
     restart: always
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - PGDATA
     networks:
-      - redis
+      - bot_network
     volumes:
-      - ./data:/data
+      - .:/var/lib/postgresql/data
+
+  adminer:
+     image: adminer
+     restart: always
+     networks:
+      - bot_network
+     ports:
+      - 8080:8080
