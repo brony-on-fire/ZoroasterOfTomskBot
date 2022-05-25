@@ -12,6 +12,18 @@ engine_settings = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@po
 engine = create_engine(engine_settings)
 Base = declarative_base()
 
+class Group(Base):
+    '''
+    Класс для работы с базой групп
+    '''
+    __tablename__ = 'groups'
+
+    id_telegram = Column(BigInteger, primary_key=True, autoincrement = False)
+    chat_name = Column(String, nullable=False)
+    posting_selector = Column(Boolean)
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
+
 class Word(Base):
     '''
     Класс для работы с базой слов
