@@ -8,6 +8,7 @@ services:
 
   python:
     build: ./python
+    container_name: zoroaster
     restart: always
     environment:
       - BOT_TOKEN
@@ -32,6 +33,18 @@ services:
       - bot_network
     volumes:
       - .:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo
+    container_name: mongo_db
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
+    networks:
+      - bot_network
+    volumes:
+      - ./mongodata:/data/db
 
   adminer:
      image: adminer
