@@ -27,7 +27,7 @@ def sorted_birthday(birthday_hash):
         birthday_list.append([birthday_hash[key][2], birthday_hash[key][1]])
 
     #Сортируем список
-    birthday_list = sorted(birthday_list, key=lambda d: datetime.strptime(d[0], '%d%m'))
+    birthday_list = sorted(birthday_list, key=lambda d: datetime.strptime(d[0] + '1904', '%d%m%Y'))
 
     #Преобразуем даты в читаемый формат
     birthday_list = [f'{user_name} - {full_birthday(birthday)}' for birthday, user_name in birthday_list]
